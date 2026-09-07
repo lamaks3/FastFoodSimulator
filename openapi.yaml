@@ -1,0 +1,186 @@
+openapi: 3.0.0
+info:
+  title: Restaurant Order API
+  description: API for managing restaurant orders, including creation, cooking, and retrieval.
+  version: 1.0.0
+servers:
+  - url: https://api.restaurant.com/v1
+paths:
+  /orders:
+    post:
+      summary: Create a new order
+      description: Creates a new order and returns the full order details for receipt generation.
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderDto'
+      responses:
+        '200':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullOrder'
+        '404':
+          description: Resource not found (e.g., invalid dish)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: Get all orders
+      description: Retrieves all orders categorized as ready and not ready.
+      operationId: getOrders
+      responses:
+        '200':
+          description: Successfully retrieved orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orders'
+  /kitchen:
+    get:
+      summary: Get kitchen orders
+      description: Retrieves all orders that are currently in the kitchen queue.
+      operationId: getKitchenOrders
+      responses:
+        '200':
+          description: Successfully retrieved kitchen orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KitchenOrder'
+  /orders/cook:
+    post:
+      summary: Cook an order
+      description: Moves an order from the kitchen queue to being cooked.
+      operationId: cookOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KitchenOrder'
+      responses:
+        '200':
+          description: Order cooking started
+        '404':
+          description: Order not found in kitchen queue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /orders/{id}:
+    delete:
+      summary: Remove an order
+      description: Removes an order from the system.
+      operationId: removeOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the order to remove
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FullOrder'
+      responses:
+        '200':
+          description: Order removed successfully
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    CreateOrderDto:
+      type: object
+      required:
+        - customerName
+        - dishes
+      properties:
+        customerName:
+          type: string
+          example: "John Doe"
+        dishes:
+          type: array
+          items:
+            type: string
+          example: ["Pizza", "Pasta"]
+    FullOrder:
+      type: object
+      required:
+        - id
+        - customerName
+        - dishes
+      properties:
+        id:
+          type: integer
+          example: 1
+        customerName:
+          type: string
+          example: "John Doe"
+        dishes:
+          type: array
+          items:
+            type: string
+          example: ["Pizza", "Pasta"]
+    ShortOrder:
+      type: object
+      required:
+        - id
+        - customerName
+      properties:
+        id:
+          type: integer
+          example: 1
+        customerName:
+          type: string
+          example: "John Doe"
+    KitchenOrder:
+      type: object
+      required:
+        - id
+        - dishes
+      properties:
+        id:
+          type: integer
+          example: 1
+        dishes:
+          type: array
+          items:
+            type: string
+          example: ["Pizza", "Pasta"]
+    Orders:
+      type: object
+      required:
+        - ready
+        - notReady
+      properties:
+        ready:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShortOrder'
+        notReady:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShortOrder'
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "Resource not found"
