@@ -56,17 +56,7 @@ struct KitchenOrdersList: View {
                         .font(.largeTitle)
                         .bold()
                     Spacer()
-                    Button(action: { print("Search tapped") }) {
-                        Image(systemName: "checkmark")
-                            .font(.largeTitle)
-                            .foregroundStyle(.white)
-                            .bold()
-                            .padding()
-                    }
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .foregroundStyle(.green)
-                    )
+                    DoneButton()
                 }
                 .padding()
                 .background(
@@ -79,6 +69,39 @@ struct KitchenOrdersList: View {
     }
 }
 
+struct DoneButton: View {
+    @State private var didError = false
+
+    var body: some View {
+        Button(action: { didError = true }) {
+            Image(systemName: "checkmark")
+                .font(.largeTitle)
+                .foregroundStyle(.white)
+                .bold()
+                .padding()
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 15)
+                .foregroundStyle(.green)
+        )
+        .alert( "Are you sure to finish this order?",
+            isPresented: $didError,
+            presenting: ""
+        ) { details in
+            Button(role: .cancel) {
+                // Handle the deletion.
+            } label: {
+                Text("Cancel")
+            }
+            Button() {
+                // Handle the deletion.
+            } label: {
+                Text("Funish")
+            }
+
+        }
+    }
+}
 
 #Preview {
     KitchenView(orderService: MockOrderService())
