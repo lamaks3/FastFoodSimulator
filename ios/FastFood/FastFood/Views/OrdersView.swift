@@ -48,15 +48,20 @@ struct OrdersView: View {
         }
         .ignoresSafeArea()
         .task {
-            await loadOrders()
+            while !Task.isCancelled {
+                await loadOrders()
+                try? await Task.sleep(nanoseconds: 3_000_000_000)
+            }
         }
     }
 
     private func loadOrders() async {
             do {
                 let fetchedOrders = try await orderService.getOrders()
-                readyOrders = fetchedOrders.ready
-                inProgressOrders = fetchedOrders.notReady
+                withAnimation(.easeInOut) {
+                            readyOrders = fetchedOrders.ready
+                            inProgressOrders = fetchedOrders.notReady
+                }
             } catch {
                 print("Ошибка при загрузке заказов: \(error)")
             }
