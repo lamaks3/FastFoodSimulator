@@ -8,14 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
+
+    let orderService: OrderServiceProtocol = MockOrderService()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        OrdersView(orderService: orderService)
     }
 }
 
