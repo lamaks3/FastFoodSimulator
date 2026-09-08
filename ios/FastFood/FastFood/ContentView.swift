@@ -12,7 +12,8 @@ struct ContentView: View {
     let orderService: OrderServiceProtocol = MockOrderService()
     
     var body: some View {
-        OrdersView(orderService: orderService)
+        //OrdersView(orderService: orderService)
+        KitchenView(orderService: orderService)
     }
 }
 

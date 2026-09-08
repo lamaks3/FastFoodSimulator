@@ -22,11 +22,14 @@ struct KitchenView: View {
                     .padding()
                 Spacer()
             }
-            KitchenOrdersList(kitchenOrders: $kitchenOrders)
+            KitchenOrdersList(orderService: orderService, kitchenOrders: $kitchenOrders)
             Spacer()
         }
         .task {
-            await loadOrders()
+            while !Task.isCancelled {
+                await loadOrders()
+                try? await Task.sleep(nanoseconds: 5_000_000_000)
+            }
         }
     }
 
@@ -41,6 +44,7 @@ struct KitchenView: View {
 }
 
 struct KitchenOrdersList: View {
+    let orderService: OrderServiceProtocol
     @Binding var kitchenOrders: [KitchenOrder]
 
     var body: some View {
@@ -56,7 +60,11 @@ struct KitchenOrdersList: View {
                         .font(.largeTitle)
                         .bold()
                     Spacer()
-                    DoneButton()
+                    DoneButton(orderService: orderService, kitchenOrder: order) {
+                        withAnimation {
+                            kitchenOrders.removeAll { $0.id == order.id }
+                        }
+                    }
                 }
                 .padding()
                 .background(
@@ -70,6 +78,10 @@ struct KitchenOrdersList: View {
 }
 
 struct DoneButton: View {
+    let orderService: OrderServiceProtocol
+    let kitchenOrder: KitchenOrder
+    var onFinish: () -> Void
+
     @State private var didError = false
 
     var body: some View {
@@ -94,7 +106,18 @@ struct DoneButton: View {
                 Text("Cancel")
             }
             Button() {
-                // Handle the deletion.
+                Task {
+                    do {
+                        try await orderService.cookOrder(kitchenOrder)
+
+                        await MainActor.run {
+                            onFinish()
+                        }
+
+                    } catch {
+                        print("Ошибка при обработке заказа: \(error)")
+                    }
+                }
             } label: {
                 Text("Funish")
             }
