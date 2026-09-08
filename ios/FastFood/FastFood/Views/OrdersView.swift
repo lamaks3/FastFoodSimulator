@@ -28,7 +28,7 @@ struct OrdersView: View {
             }
             .background(
                 Rectangle()
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(.black.opacity(0.4))
             )
 
             VStack {
@@ -43,7 +43,7 @@ struct OrdersView: View {
             }
             .background(
                 Rectangle()
-                    .foregroundStyle(.green)
+                    .foregroundStyle(.black.opacity(0.2))
             )
         }
         .ignoresSafeArea()

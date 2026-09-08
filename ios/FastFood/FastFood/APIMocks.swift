@@ -73,7 +73,19 @@ enum MockData {
 
     static var kitchenOrders: [KitchenOrder] = [
         KitchenOrder(id: 3, dishes: ["Sushi Set"]),
-        KitchenOrder(id: 4, dishes: ["Caesar Salad", "Lemonade"])
+        KitchenOrder(id: 4, dishes: ["Caesar Salad", "Lemonade"]),
+        KitchenOrder(id: 3, dishes: ["Sushi Set"]),
+        KitchenOrder(id: 4, dishes: ["Caesar Salad", "Lemonade"]),
+        KitchenOrder(id: 3, dishes: ["Sushi Set"]),
+        KitchenOrder(id: 4, dishes: ["Caesar Salad", "Lemonade"]),
+        KitchenOrder(id: 3, dishes: ["Sushi Set"]),
+        KitchenOrder(id: 4, dishes: ["Caesar Salad", "Lemonade"]),
+        KitchenOrder(id: 3, dishes: ["Sushi Set"]),
+        KitchenOrder(id: 4, dishes: ["Caesar Salad", "Lemonade"]),
+        KitchenOrder(id: 3, dishes: ["Sushi Set"]),
+        KitchenOrder(id: 4, dishes: ["Caesar Salad", "Lemonade"]),
+        KitchenOrder(id: 3, dishes: ["Sushi Set"]),
+        KitchenOrder(id: 114, dishes: ["Caesar Salad", "Lemonade"]),
     ]
 
     static let notFoundError = ErrorResponse(message: "Resource not found")
