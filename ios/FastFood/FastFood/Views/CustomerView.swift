@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct Order: View {
-    @State var selectedDishes: [String] = []
-    @State var customerName: String = ""
+struct CustomerView: View {
+    let orderService: OrderServiceProtocol
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -22,20 +22,17 @@ struct Order: View {
                 }
                 HStack {
                     BundelCard(
-                        customerName: $customerName,
-                        selectedDishes: $selectedDishes,
+                        orderService: orderService,
                         title: "Bundle 1",
                         components: ["Coke", "Pizza", "IceCream"]
                     )
                     BundelCard(
-                        customerName: $customerName,
-                        selectedDishes: $selectedDishes,
+                        orderService: orderService,
                         title: "Bundle 2",
                         components: ["Coke", "Pizza", "IceCream"]
                     )
                     BundelCard(
-                        customerName: $customerName,
-                        selectedDishes: $selectedDishes,
+                        orderService: orderService,
                         title: "Bundle 3",
                         components: ["Coke", "Pizza", "IceCream"]
                     )
@@ -46,14 +43,14 @@ struct Order: View {
 }
 
 struct BundelCard: View {
-    @Binding var customerName: String
-    @Binding var selectedDishes: [String]
+    let orderService: OrderServiceProtocol
+
     let title: String
     let components: [String]
 
     var body: some View {
         NavigationLink {
-            InputNameForm(name: $customerName)
+            InputNameForm(orderService: orderService, dishes: components)
         } label: {
             VStack {
                 VStack(alignment: .center) {
@@ -62,8 +59,7 @@ struct BundelCard: View {
                         .font(.largeTitle)
                         .bold()
                 }
-                let dishesString = components.map { $0 }.joined(
-                    separator: "\n")
+                let dishesString = components.joined(separator: "\n")
                 VStack(alignment: .leading) {
                     Text(dishesString)
                         .foregroundStyle(Color.primary)
@@ -80,7 +76,16 @@ struct BundelCard: View {
 }
 
 struct InputNameForm: View {
-    @Binding var name: String
+    let orderService: OrderServiceProtocol
+    let dishes: [String]
+
+    @State private var name: String = ""
+
+    @State private var showingSuccessAlert = false
+    @State private var createdOrderId: Int? = nil
+
+    @Environment(\.dismiss) private var dismiss
+
     var body: some View {
         VStack {
             HStack {
@@ -90,11 +95,23 @@ struct InputNameForm: View {
                     .padding()
                 Spacer()
             }
-            TextField("", text: $name)
-                .textFieldStyle(.roundedBorder)
-                                .padding()
-            NavigationLink {
 
+            TextField("Enter your name", text: $name)
+                .textFieldStyle(.roundedBorder)
+                .padding()
+
+            Button {
+                Task {
+                    do {
+                        let order = try await orderService.createOrder(
+                            CreateOrderDto(customerName: name, dishes: dishes)
+                        )
+                        createdOrderId = order.id
+                        showingSuccessAlert = true
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
             } label: {
                 Text("Place order")
                     .font(.largeTitle)
@@ -105,11 +122,20 @@ struct InputNameForm: View {
                             .foregroundStyle(.black)
                     )
             }
+            .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        }
+        .alert("Заказ успешно оформлен!", isPresented: $showingSuccessAlert) {
+            Button("ОК") {
+                dismiss()
+            }
+        } message: {
+            if let orderId = createdOrderId {
+                Text("Номер вашего заказа: \(orderId)")
+            }
         }
     }
 }
 
-
 #Preview {
-    Order()
+    CustomerView(orderService: MockOrderService())
 }

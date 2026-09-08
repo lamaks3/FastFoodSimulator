@@ -26,6 +26,7 @@ struct ContentView: View {
 
         OrdersView(orderService: orderService)
         KitchenView(orderService: orderService)
+        CustomerView(orderService: orderService)
     }
 }
 
