@@ -48,34 +48,19 @@ protocol OrderServiceProtocol {
     func getOrders() async throws -> Orders
     func getKitchenOrders() async throws -> [KitchenOrder]
     func cookOrder(_ order: KitchenOrder) async throws
-    func removeOrder(id: Int, order: FullOrder) async throws
+    func removeOrder(id: Int) async throws
 }
 
 // MARK: - Static mock data
 
 enum MockData {
-    static var fullOrders: [FullOrder] = [
-        FullOrder(id: 1, customerName: "John Doe", dishes: ["Pizza", "Pasta"]),
-        FullOrder(id: 2, customerName: "Jane Smith", dishes: ["Burger", "Fries"]),
-        FullOrder(id: 3, customerName: "Alex Johnson", dishes: ["Sushi Set"]),
-        FullOrder(id: 4, customerName: "Maria Garcia", dishes: ["Caesar Salad", "Lemonade"])
-    ]
+    static var fullOrders: [FullOrder] = []
 
-    static var readyOrders: [ShortOrder] = [
-        ShortOrder(id: 1, customerName: "John Doe"),
-        ShortOrder(id: 2, customerName: "Jane Smith")
-    ]
+    static var readyOrders: [ShortOrder] = []
 
-    static var notReadyOrders: [ShortOrder] = [
-        ShortOrder(id: 3, customerName: "Alex Johnson"),
-        ShortOrder(id: 4, customerName: "Maria Garcia")
-    ]
+    static var notReadyOrders: [ShortOrder] = []
 
-    static var kitchenOrders: [KitchenOrder] = [
-        KitchenOrder(id: 3, dishes: ["Sushi Set"]),
-        KitchenOrder(id: 4, dishes: ["Caesar Salad", "Lemonade"]),
-        KitchenOrder(id: 114, dishes: ["Caesar Salad", "Lemonade"]),
-    ]
+    static var kitchenOrders: [KitchenOrder] = []
 
     static let notFoundError = ErrorResponse(message: "Resource not found")
 }
@@ -130,7 +115,7 @@ final class MockOrderService: OrderServiceProtocol {
         }
     }
 
-    func removeOrder(id: Int, order: FullOrder) async throws {
+    func removeOrder(id: Int) async throws {
         try await Task.sleep(nanoseconds: simulatedDelayNanoseconds)
 
         guard let index = MockData.fullOrders.firstIndex(where: { $0.id == id }) else {

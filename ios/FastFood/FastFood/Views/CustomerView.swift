@@ -14,7 +14,7 @@ struct CustomerView: View {
         NavigationStack {
             VStack {
                 HStack {
-                    Text("Hello 👋🏻\nWhat do you want to order?")
+                    Text("Hello :)\nWhat do you want to order?")
                         .font(.largeTitle)
                         .bold()
                         .padding()
@@ -24,17 +24,17 @@ struct CustomerView: View {
                     BundelCard(
                         orderService: orderService,
                         title: "Bundle 1",
-                        components: ["Coke", "Pizza", "IceCream"]
+                        components: ["Humburger", "French-Fries", "Coke"]
                     )
                     BundelCard(
                         orderService: orderService,
                         title: "Bundle 2",
-                        components: ["Coke", "Pizza", "IceCream"]
+                        components: ["Pizza", "Ice-Cream", "Tea"]
                     )
                     BundelCard(
                         orderService: orderService,
                         title: "Bundle 3",
-                        components: ["Coke", "Pizza", "IceCream"]
+                        components: ["Nuggets", "French-Fries", "Zero Coke"]
                     )
                 }
             }
@@ -124,13 +124,13 @@ struct InputNameForm: View {
             }
             .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         }
-        .alert("Заказ успешно оформлен!", isPresented: $showingSuccessAlert) {
+        .alert("Order was placced", isPresented: $showingSuccessAlert) {
             Button("ОК") {
                 dismiss()
             }
         } message: {
             if let orderId = createdOrderId {
-                Text("Номер вашего заказа: \(orderId)")
+                Text("Order number: \(orderId)")
             }
         }
     }

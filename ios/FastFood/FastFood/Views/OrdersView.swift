@@ -21,7 +21,7 @@ struct OrdersView: View {
             VStack {
                 VStack {
                     Title(title: "Ready orders")
-                    OrdersList(orders: $readyOrders)
+                    OrdersList(orderService: orderService, isReadyOrdersView: true , orders: $readyOrders)
                 }
                 .padding([.leading, .trailing])
                 Spacer()
@@ -34,7 +34,11 @@ struct OrdersView: View {
             VStack {
                 VStack {
                     Title(title: "In progress")
-                    OrdersList(orders: $inProgressOrders)
+                    OrdersList(
+                        orderService: orderService,
+                        isReadyOrdersView: false ,
+                        orders: $inProgressOrders
+                    )
 
                 }
                 .padding([.leading, .trailing])
@@ -85,21 +89,34 @@ struct Title: View {
 }
 
 struct OrdersList: View {
-
+    let orderService: OrderServiceProtocol
+    let isReadyOrdersView: Bool
     @Binding var orders: [ShortOrder]
 
     var body: some View {
         ForEach(orders, id: \.id) { order in
-            HStack {
-                Text(String(order.id))
-                    .font(.largeTitle)
-                    .bold()
-                    .padding([.top, .leading, .trailing])
-                Spacer()
-                Text(order.customerName)
-                    .font(.largeTitle)
-                    .bold()
-                    .padding([.top, .leading, .trailing])
+            Button() {
+                if isReadyOrdersView {
+                    Task {
+                        do {
+                            try await orderService.removeOrder(id: order.id)
+                        } catch {
+                            print("Error to delete order")
+                        }
+                    }
+                }
+            } label: {
+                HStack {
+                    Text(String(order.id))
+                        .font(.largeTitle)
+                        .bold()
+                        .padding([.top, .leading, .trailing])
+                    Spacer()
+                    Text(order.customerName)
+                        .font(.largeTitle)
+                        .bold()
+                        .padding([.top, .leading, .trailing])
+                }
             }
         }
     }
