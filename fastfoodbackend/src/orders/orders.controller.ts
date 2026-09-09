@@ -15,8 +15,8 @@ export class OrdersController {
     const result = this.ordersService.createOrder(createOrderDto);
     return result;
   }
-  @Delete(':/id')
-  async removeOrder(@Param() id: number) {
-    const result = await this.ordersService.deleteOrder(id);
+  @Delete(':id')
+  async removeOrderFromReady(@Param() id: number) {
+    const result = await this.ordersService.removeOrderFromReady(id);
   }
 }
