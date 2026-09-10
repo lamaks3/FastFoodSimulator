@@ -55,7 +55,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/KitchenOrder'
-  /orders/cook:
+  /kitchen/cook:
     post:
       summary: Cook an order
       description: Moves an order from the kitchen queue to being cooked.
@@ -87,12 +87,6 @@ paths:
           schema:
             type: integer
           description: ID of the order to remove
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FullOrder'
       responses:
         '200':
           description: Order removed successfully
