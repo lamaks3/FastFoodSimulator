@@ -9,41 +9,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrdersService = void 0;
+exports.KitchenService = void 0;
 const common_1 = require("@nestjs/common");
 const dataStorage_service_1 = require("../data/dataStorage.service");
-let OrdersService = class OrdersService {
+let KitchenService = class KitchenService {
     dataStorageService;
     constructor(dataStorageService) {
         this.dataStorageService = dataStorageService;
     }
-    async getOrders() {
-        const orders = this.dataStorageService.getOrders();
-        return {
-            ready: this.fullOrderToShortOrder(orders.ready),
-            notReady: this.fullOrderToShortOrder(orders.notReady),
-        };
+    getKitchenOrders() {
+        return this.fullOrdersToKitchenOrders(this.dataStorageService.getOrders().notReady);
     }
-    async createOrder(order) {
-        const createdOrder = this.dataStorageService.addOrder(order.customerName, order.dishes);
-        const { dishes, ...shortOrder } = createdOrder;
-        return shortOrder;
+    cookOrder({ id }) {
+        const order = this.dataStorageService.findOrder(id);
+        if (order === undefined)
+            throw new common_1.NotFoundException('Order not found');
+        this.dataStorageService.removeOrderFromNotReady(order.id);
+        this.dataStorageService.addOrderToReady(order);
     }
-    async removeOrderFromReady(id) {
-        const deleteOrder = this.dataStorageService.removeOrderFromReady(id);
-    }
-    fullOrderToShortOrder(orders) {
+    fullOrdersToKitchenOrders(orders) {
         return orders.map((order) => {
             return {
                 id: order.id,
-                customerName: order.customerName,
+                dishes: order.dishes,
             };
         });
     }
 };
-exports.OrdersService = OrdersService;
-exports.OrdersService = OrdersService = __decorate([
+exports.KitchenService = KitchenService;
+exports.KitchenService = KitchenService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [dataStorage_service_1.DataStorageService])
-], OrdersService);
-//# sourceMappingURL=orders.service.js.map
+], KitchenService);
+//# sourceMappingURL=kitchen.service.js.map

@@ -29,8 +29,8 @@ let OrdersController = class OrdersController {
         const result = this.ordersService.createOrder(createOrderDto);
         return result;
     }
-    async removeOrder(id) {
-        const result = await this.ordersService.deleteOrder(id);
+    async removeOrderFromReady(id) {
+        const result = await this.ordersService.removeOrderFromReady(id);
     }
 };
 exports.OrdersController = OrdersController;
@@ -53,7 +53,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
-], OrdersController.prototype, "removeOrder", null);
+], OrdersController.prototype, "removeOrderFromReady", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [orders_service_1.OrdersService])

@@ -5,5 +5,5 @@ export declare class OrdersController {
     constructor(ordersService: OrdersService);
     getOrders(): Promise<import("./dto/order.type").OrderDto>;
     createOrder(createOrderDto: CreateOrderDto): Promise<import("./types/shortOrder").ShortOrder>;
-    removeOrder(id: number): Promise<void>;
+    removeOrderFromReady(id: number): Promise<void>;
 }

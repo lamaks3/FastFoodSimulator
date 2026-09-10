@@ -24,6 +24,17 @@ export class DataStorageService {
     this.orders.ready.push(order);
     return order;
   }
+  findOrder(id: number) {
+    return this.orders.ready.find((order) => order.id === id);
+  }
+  removeOrderFromNotReady(id: number) {
+    this.orders.notReady = this.orders.notReady.filter(
+      (order) => order.id !== id,
+    );
+  }
+  addOrderToReady(fullOrder: FullOrder) {
+    this.orders.ready.push(fullOrder);
+  }
   removeOrderFromReady(id: number) {
     this.orders.ready = this.orders.ready.filter((order) => order.id !== id);
   }

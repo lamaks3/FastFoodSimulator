@@ -6,4 +6,8 @@ export declare class DataStorageService {
     private maxId;
     getOrders(): OrderStorage;
     addOrder(customerName: string, dishes: string[]): FullOrder;
+    findOrder(id: number): FullOrder | undefined;
+    removeOrderFromNotReady(id: number): void;
+    addOrderToReady(fullOrder: FullOrder): void;
+    removeOrderFromReady(id: number): void;
 }

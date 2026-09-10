@@ -7,5 +7,6 @@ export declare class OrdersService {
     constructor(dataStorageService: DataStorageService);
     getOrders(): Promise<OrderDto>;
     createOrder(order: CreateOrderDto): Promise<ShortOrder>;
-    deleteOrder(id: number): Promise<void>;
+    removeOrderFromReady(id: number): Promise<void>;
+    private fullOrderToShortOrder;
 }

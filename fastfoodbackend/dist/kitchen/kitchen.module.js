@@ -6,16 +6,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataStorageModule = void 0;
+exports.KitchenModule = void 0;
 const common_1 = require("@nestjs/common");
-const dataStorage_service_1 = require("./dataStorage.service");
-let DataStorageModule = class DataStorageModule {
+const kitchen_service_1 = require("./kitchen.service");
+const kitchen_controller_1 = require("./kitchen.controller");
+const dataStorage_module_1 = require("../data/dataStorage.module");
+let KitchenModule = class KitchenModule {
 };
-exports.DataStorageModule = DataStorageModule;
-exports.DataStorageModule = DataStorageModule = __decorate([
+exports.KitchenModule = KitchenModule;
+exports.KitchenModule = KitchenModule = __decorate([
     (0, common_1.Module)({
-        providers: [dataStorage_service_1.DataStorageService],
-        exports: [dataStorage_service_1.DataStorageService],
+        imports: [dataStorage_module_1.DataStorageModule],
+        controllers: [kitchen_controller_1.KitchenController],
+        providers: [kitchen_service_1.KitchenService],
     })
-], DataStorageModule);
-//# sourceMappingURL=dataStorage.module.js.map
+], KitchenModule);
+//# sourceMappingURL=kitchen.module.js.map

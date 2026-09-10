@@ -31,6 +31,18 @@ let DataStorageService = class DataStorageService {
         this.orders.ready.push(order);
         return order;
     }
+    findOrder(id) {
+        return this.orders.ready.find((order) => order.id === id);
+    }
+    removeOrderFromNotReady(id) {
+        this.orders.notReady = this.orders.notReady.filter((order) => order.id !== id);
+    }
+    addOrderToReady(fullOrder) {
+        this.orders.ready.push(fullOrder);
+    }
+    removeOrderFromReady(id) {
+        this.orders.ready = this.orders.ready.filter((order) => order.id !== id);
+    }
 };
 exports.DataStorageService = DataStorageService;
 exports.DataStorageService = DataStorageService = __decorate([
