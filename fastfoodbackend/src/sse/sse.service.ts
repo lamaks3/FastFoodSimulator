@@ -3,13 +3,26 @@ import { Subject } from 'rxjs';
 import { SseCreateCommand, SseRemoveCommand } from './types/sseType';
 import { ShortOrder } from 'src/types/shortOrder';
 import { KitchenOrder } from 'src/types/kitchenOrder';
+import { HEARTBEAT_INTERVAL } from 'src/constants';
 
 @Injectable()
 export class SseService {
   constructor() {
     this._kitchenSse = new Subject();
+    setInterval(
+      () => this._kitchenSse.next({ data: 'heartbeat' }),
+      HEARTBEAT_INTERVAL,
+    );
     this._ordersSse = new Subject();
+    setInterval(
+      () => this._ordersSse.next({ data: 'heartbeat' }),
+      HEARTBEAT_INTERVAL,
+    );
     this._readyOrdersSse = new Subject();
+    setInterval(
+      () => this._readyOrdersSse.next({ data: 'heartbeat' }),
+      HEARTBEAT_INTERVAL,
+    );
   }
   private _kitchenSse: Subject<MessageEvent>;
   private _ordersSse: Subject<MessageEvent>;
