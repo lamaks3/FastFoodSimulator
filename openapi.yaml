@@ -24,12 +24,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FullOrder'
-        '404':
-          description: Resource not found (e.g., invalid dish)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
     get:
       summary: Get all orders
       description: Retrieves all orders categorized as ready and not ready.
@@ -65,7 +59,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KitchenOrder'
+              $ref: '#/components/schemas/CookOrderRequest'
       responses:
         '200':
           description: Order cooking started
@@ -77,8 +71,8 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
   /orders/{id}:
     delete:
-      summary: Remove an order
-      description: Removes an order from the system.
+      summary: Remove an order from the ready queue
+      description: Removes an order from the ready queue. If the order is not found, the request succeeds with no changes.
       operationId: removeOrder
       parameters:
         - name: id
@@ -89,13 +83,43 @@ paths:
           description: ID of the order to remove
       responses:
         '200':
-          description: Order removed successfully
-        '404':
-          description: Order not found
+          description: Order removed successfully (or was not found)
+  /sse/orders:
+    get:
+      summary: Subscribe to order events
+      description: Server-Sent Events stream for order list changes (new orders, removals).
+      operationId: ordersSse
+      responses:
+        '200':
+          description: SSE event stream
           content:
-            application/json:
+            text/event-stream:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/SseOrderEvent'
+  /sse/kitchen:
+    get:
+      summary: Subscribe to kitchen events
+      description: Server-Sent Events stream for kitchen queue changes (orders added to/removed from kitchen).
+      operationId: kitchenSse
+      responses:
+        '200':
+          description: SSE event stream
+          content:
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/SseKitchenEvent'
+  /sse/ready:
+    get:
+      summary: Subscribe to ready order events
+      description: Server-Sent Events stream for ready queue changes (orders added to/removed from ready).
+      operationId: readySse
+      responses:
+        '200':
+          description: SSE event stream
+          content:
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/SseReadyEvent'
 components:
   schemas:
     CreateOrderDto:
@@ -156,6 +180,14 @@ components:
           items:
             type: string
           example: ["Pizza", "Pasta"]
+    CookOrderRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          example: 1
     Orders:
       type: object
       required:
@@ -178,3 +210,63 @@ components:
         message:
           type: string
           example: "Resource not found"
+    SseOrderEvent:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SseOrderCommand'
+    SseOrderCommand:
+      type: object
+      required:
+        - orderId
+        - command
+      properties:
+        orderId:
+          type: integer
+          example: 1
+        command:
+          type: string
+          enum: [add, remove]
+          example: "add"
+        order:
+          $ref: '#/components/schemas/ShortOrder'
+    SseKitchenEvent:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SseKitchenCommand'
+    SseKitchenCommand:
+      type: object
+      required:
+        - orderId
+        - command
+      properties:
+        orderId:
+          type: integer
+          example: 1
+        command:
+          type: string
+          enum: [add, remove]
+          example: "add"
+        order:
+          $ref: '#/components/schemas/KitchenOrder'
+    SseReadyEvent:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SseReadyCommand'
+    SseReadyCommand:
+      type: object
+      required:
+        - orderId
+        - command
+      properties:
+        orderId:
+          type: integer
+          example: 1
+        command:
+          type: string
+          enum: [add, remove]
+          example: "add"
+        order:
+          $ref: '#/components/schemas/ShortOrder'
