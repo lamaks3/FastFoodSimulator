@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const kitchen_service_1 = require("./kitchen.service");
 const kitchen_controller_1 = require("./kitchen.controller");
 const dataStorage_module_1 = require("../data/dataStorage.module");
+const sse_module_1 = require("../sse/sse.module");
 let KitchenModule = class KitchenModule {
 };
 exports.KitchenModule = KitchenModule;
 exports.KitchenModule = KitchenModule = __decorate([
     (0, common_1.Module)({
-        imports: [dataStorage_module_1.DataStorageModule],
+        imports: [dataStorage_module_1.DataStorageModule, sse_module_1.SseModule],
         controllers: [kitchen_controller_1.KitchenController],
         providers: [kitchen_service_1.KitchenService],
     })

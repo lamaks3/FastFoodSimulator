@@ -3,6 +3,6 @@ import { KitchenOrderDto } from './dto/kitchenOrder.dto';
 export declare class KitchenController {
     private readonly kitchenService;
     constructor(kitchenService: KitchenService);
-    getKitchenOrders(): KitchenOrderDto[];
+    getKitchenOrders(): import("../types/kitchenOrder").KitchenOrder[];
     moveOrderToReady(kitchenOrder: KitchenOrderDto): void;
 }

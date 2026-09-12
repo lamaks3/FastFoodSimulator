@@ -4,11 +4,11 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
-  Sse,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './types/createOrder.dto';
+import { CreateOrderDto } from './dto/createOrder.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -24,11 +24,7 @@ export class OrdersController {
     return result;
   }
   @Delete(':id')
-  async removeOrderFromReady(@Param() id: number) {
+  async removeOrderFromReady(@Param('id', ParseIntPipe) id: number) {
     const result = await this.ordersService.removeOrderFromReady(id);
-  }
-  @Sse('')
-  sse() {
-    return this.ordersService.sse;
   }
 }

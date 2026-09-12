@@ -1,7 +1,7 @@
-export class KitchenOrderDto {
-  constructor(id: number) {
-    this.id = id;
-  }
+import { IsNumber, IsPositive } from 'class-validator';
 
-  id: number;
+export class KitchenOrderDto {
+  @IsNumber()
+  @IsPositive()
+  id!: number;
 }

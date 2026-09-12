@@ -12,38 +12,39 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const dataStorage_service_1 = require("../data/dataStorage.service");
+const sse_service_1 = require("../sse/sse.service");
+const fullOrdersToShortOrders_1 = require("../utils/fullOrdersToShortOrders");
+const fullOrderToKitchenOrder_1 = require("../utils/fullOrderToKitchenOrder");
 let OrdersService = class OrdersService {
     dataStorageService;
-    constructor(dataStorageService) {
+    sseService;
+    constructor(dataStorageService, sseService) {
         this.dataStorageService = dataStorageService;
+        this.sseService = sseService;
     }
-    async getOrders() {
+    getOrders() {
         const orders = this.dataStorageService.getOrders();
         return {
-            ready: this.fullOrderToShortOrder(orders.ready),
-            notReady: this.fullOrderToShortOrder(orders.notReady),
+            ready: (0, fullOrdersToShortOrders_1.fullOrdersToShortOrders)(orders.ready),
+            notReady: (0, fullOrdersToShortOrders_1.fullOrdersToShortOrders)(orders.notReady),
         };
     }
-    async createOrder(order) {
+    createOrder(order) {
         const createdOrder = this.dataStorageService.addOrder(order.customerName, order.dishes);
         const { dishes, ...shortOrder } = createdOrder;
-        return shortOrder;
+        this.sseService.addOrder(createdOrder.id, shortOrder);
+        this.sseService.addKitchenOrder(createdOrder.id, (0, fullOrderToKitchenOrder_1.fullOrderToKitchenOrder)(createdOrder));
+        return createdOrder;
     }
-    async removeOrderFromReady(id) {
-        const deleteOrder = this.dataStorageService.removeOrderFromReady(id);
-    }
-    fullOrderToShortOrder(orders) {
-        return orders.map((order) => {
-            return {
-                id: order.id,
-                customerName: order.customerName,
-            };
-        });
+    removeOrderFromReady(id) {
+        this.dataStorageService.removeOrderFromReady(id);
+        this.sseService.removeReadyOrder(id);
     }
 };
 exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [dataStorage_service_1.DataStorageService])
+    __metadata("design:paramtypes", [dataStorage_service_1.DataStorageService,
+        sse_service_1.SseService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

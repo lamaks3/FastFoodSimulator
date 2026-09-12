@@ -1,19 +1,17 @@
-import { Injectable, MessageEvent } from '@nestjs/common';
-import { OrderDto } from './dto/order.type';
-import { ShortOrder } from '../types/shortOrder';
-import { CreateOrderDto } from './types/createOrder.dto';
+import { Injectable } from '@nestjs/common';
+import { OrderDto } from './types/order.type';
+import { CreateOrderDto } from './dto/createOrder.dto';
 import { DataStorageService } from 'src/data/dataStorage.service';
 import { SseService } from 'src/sse/sse.service';
 import { fullOrdersToShortOrders } from 'src/utils/fullOrdersToShortOrders';
 import { fullOrderToKitchenOrder } from 'src/utils/fullOrderToKitchenOrder';
+import { FullOrder } from 'src/types/fullOrder';
 @Injectable()
 export class OrdersService {
   constructor(
     private readonly dataStorageService: DataStorageService,
     private readonly sseService: SseService,
-  ) {
-    this.dataStorageService = dataStorageService;
-  }
+  ) {}
   getOrders(): OrderDto {
     const orders = this.dataStorageService.getOrders();
 
@@ -22,7 +20,7 @@ export class OrdersService {
       notReady: fullOrdersToShortOrders(orders.notReady),
     };
   }
-  createOrder(order: CreateOrderDto): ShortOrder {
+  createOrder(order: CreateOrderDto): FullOrder {
     const createdOrder = this.dataStorageService.addOrder(
       order.customerName,
       order.dishes,
@@ -34,10 +32,10 @@ export class OrdersService {
       createdOrder.id,
       fullOrderToKitchenOrder(createdOrder),
     );
-    return shortOrder;
+    return createdOrder;
   }
   removeOrderFromReady(id: number) {
-    const deleteOrder = this.dataStorageService.removeOrderFromReady(id);
+    this.dataStorageService.removeOrderFromReady(id);
     this.sseService.removeReadyOrder(id);
   }
 }

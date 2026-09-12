@@ -21,11 +21,11 @@ export class DataStorageService {
       dishes,
       id: this.maxId,
     };
-    this.orders.ready.push(order);
+    this.orders.notReady.push(order);
     return order;
   }
   findOrder(id: number) {
-    return this.orders.ready.find((order) => order.id === id);
+    return this.orders.notReady.find((order) => order.id === id);
   }
   removeOrderFromNotReady(id: number) {
     this.orders.notReady = this.orders.notReady.filter(

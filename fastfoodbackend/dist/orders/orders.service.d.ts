@@ -1,12 +1,13 @@
-import { OrderDto } from './dto/order.type';
-import { ShortOrder } from './types/shortOrder';
-import { CreateOrderDto } from './types/createOrder.dto';
+import { OrderDto } from './types/order.type';
+import { CreateOrderDto } from './dto/createOrder.dto';
 import { DataStorageService } from "../data/dataStorage.service";
+import { SseService } from "../sse/sse.service";
+import { FullOrder } from "../types/fullOrder";
 export declare class OrdersService {
     private readonly dataStorageService;
-    constructor(dataStorageService: DataStorageService);
-    getOrders(): Promise<OrderDto>;
-    createOrder(order: CreateOrderDto): Promise<ShortOrder>;
-    removeOrderFromReady(id: number): Promise<void>;
-    private fullOrderToShortOrder;
+    private readonly sseService;
+    constructor(dataStorageService: DataStorageService, sseService: SseService);
+    getOrders(): OrderDto;
+    createOrder(order: CreateOrderDto): FullOrder;
+    removeOrderFromReady(id: number): void;
 }

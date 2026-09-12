@@ -1,2 +1,2 @@
-import { FullOrder } from "../../types/fullOrder";
+import { FullOrder } from "./fullOrder";
 export type ShortOrder = Pick<FullOrder, 'customerName' | 'id'>;

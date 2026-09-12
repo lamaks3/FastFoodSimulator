@@ -12,13 +12,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KitchenService = void 0;
 const common_1 = require("@nestjs/common");
 const dataStorage_service_1 = require("../data/dataStorage.service");
+const fullOrderToKitchenOrder_1 = require("../utils/fullOrderToKitchenOrder");
+const sse_service_1 = require("../sse/sse.service");
+const fullOrdersToShortOrders_1 = require("../utils/fullOrdersToShortOrders");
 let KitchenService = class KitchenService {
     dataStorageService;
-    constructor(dataStorageService) {
+    sseService;
+    constructor(dataStorageService, sseService) {
         this.dataStorageService = dataStorageService;
+        this.sseService = sseService;
     }
     getKitchenOrders() {
-        return this.fullOrdersToKitchenOrders(this.dataStorageService.getOrders().notReady);
+        return (0, fullOrderToKitchenOrder_1.fullOrdersToKitchenOrders)(this.dataStorageService.getOrders().notReady);
     }
     cookOrder({ id }) {
         const order = this.dataStorageService.findOrder(id);
@@ -26,19 +31,15 @@ let KitchenService = class KitchenService {
             throw new common_1.NotFoundException('Order not found');
         this.dataStorageService.removeOrderFromNotReady(order.id);
         this.dataStorageService.addOrderToReady(order);
-    }
-    fullOrdersToKitchenOrders(orders) {
-        return orders.map((order) => {
-            return {
-                id: order.id,
-                dishes: order.dishes,
-            };
-        });
+        this.sseService.removeOrder(id);
+        this.sseService.addReadyOrder(id, (0, fullOrdersToShortOrders_1.fullOrderToShortOrder)(order));
+        this.sseService.removeKitchenOrder(id);
     }
 };
 exports.KitchenService = KitchenService;
 exports.KitchenService = KitchenService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [dataStorage_service_1.DataStorageService])
+    __metadata("design:paramtypes", [dataStorage_service_1.DataStorageService,
+        sse_service_1.SseService])
 ], KitchenService);
 //# sourceMappingURL=kitchen.service.js.map

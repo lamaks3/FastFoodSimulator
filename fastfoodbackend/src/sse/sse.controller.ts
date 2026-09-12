@@ -10,10 +10,10 @@ export class SseController {
   }
   @Sse('/kitchen')
   kitchenSse() {
-    return this.sseService.ordersSse;
+    return this.sseService.kitchenSse;
   }
   @Sse('/ready')
   readySse() {
-    return this.sseService.ordersSse;
+    return this.sseService.readyOrdersSse;
   }
 }

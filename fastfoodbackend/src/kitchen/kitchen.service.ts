@@ -1,4 +1,4 @@
-import { Injectable, MessageEvent, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataStorageService } from 'src/data/dataStorage.service';
 import { KitchenOrderDto } from './dto/kitchenOrder.dto';
 import { fullOrdersToKitchenOrders } from 'src/utils/fullOrderToKitchenOrder';
@@ -7,7 +7,10 @@ import { fullOrderToShortOrder } from 'src/utils/fullOrdersToShortOrders';
 
 @Injectable()
 export class KitchenService {
-  constructor(private readonly dataStorageService: DataStorageService,private readonly sseService:SseService) {}
+  constructor(
+    private readonly dataStorageService: DataStorageService,
+    private readonly sseService: SseService,
+  ) {}
   getKitchenOrders() {
     return fullOrdersToKitchenOrders(
       this.dataStorageService.getOrders().notReady,
