@@ -1,4 +1,4 @@
-import { ShortOrder } from '../types/shortOrder';
+import { ShortOrder } from '../../types/shortOrder';
 
 export type OrderDto = {
   ready: ShortOrder[];
