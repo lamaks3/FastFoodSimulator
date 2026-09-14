@@ -30,6 +30,10 @@ struct KitchenOrder: Codable, Identifiable, Equatable {
     var dishes: [String]
 }
 
+struct CookOrderRequest: Codable {
+    var id: Int
+}
+
 struct Orders: Codable {
     var ready: [ShortOrder]
     var notReady: [ShortOrder]
@@ -47,8 +51,8 @@ protocol OrderServiceProtocol {
     func createOrder(_ dto: CreateOrderDto) async throws -> FullOrder
     func getOrders() async throws -> Orders
     func getKitchenOrders() async throws -> [KitchenOrder]
-    func cookOrder(_ order: KitchenOrder) async throws
-    func removeOrder(id: Int) async throws
+    func cookOrder(id: Int) async throws
+    func removeOrder(id: Int) async
 }
 
 // MARK: - Static mock data
@@ -100,29 +104,25 @@ final class MockOrderService: OrderServiceProtocol {
         return MockData.kitchenOrders
     }
 
-    func cookOrder(_ order: KitchenOrder) async throws {
+    func cookOrder(id: Int) async throws {
         try await Task.sleep(nanoseconds: simulatedDelayNanoseconds)
 
-        guard let index = MockData.kitchenOrders.firstIndex(where: { $0.id == order.id }) else {
+        guard let index = MockData.kitchenOrders.firstIndex(where: { $0.id == id }) else {
             throw MockData.notFoundError
         }
 
         MockData.kitchenOrders.remove(at: index)
 
-        if let notReadyIndex = MockData.notReadyOrders.firstIndex(where: { $0.id == order.id }) {
+        if let notReadyIndex = MockData.notReadyOrders.firstIndex(where: { $0.id == id }) {
             let moved = MockData.notReadyOrders.remove(at: notReadyIndex)
             MockData.readyOrders.append(moved)
         }
     }
 
-    func removeOrder(id: Int) async throws {
-        try await Task.sleep(nanoseconds: simulatedDelayNanoseconds)
+    func removeOrder(id: Int) async {
+        try? await Task.sleep(nanoseconds: simulatedDelayNanoseconds)
 
-        guard let index = MockData.fullOrders.firstIndex(where: { $0.id == id }) else {
-            throw MockData.notFoundError
-        }
-
-        MockData.fullOrders.remove(at: index)
+        MockData.fullOrders.removeAll { $0.id == id }
         MockData.readyOrders.removeAll { $0.id == id }
         MockData.notReadyOrders.removeAll { $0.id == id }
         MockData.kitchenOrders.removeAll { $0.id == id }

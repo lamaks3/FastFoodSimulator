@@ -108,7 +108,7 @@ struct DoneButton: View {
             Button() {
                 Task {
                     do {
-                        try await orderService.cookOrder(kitchenOrder)
+                        try await orderService.cookOrder(id: kitchenOrder.id)
 
                         await MainActor.run {
                             onFinish()
