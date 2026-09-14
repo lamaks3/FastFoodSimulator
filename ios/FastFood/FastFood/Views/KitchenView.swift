@@ -26,20 +26,37 @@ struct KitchenView: View {
             Spacer()
         }
         .task {
-            while !Task.isCancelled {
-                await loadOrders()
-                try? await Task.sleep(nanoseconds: 5_000_000_000)
-            }
+            // Initial snapshot, then live updates via SSE — no more polling.
+            await loadOrders()
+            await observeKitchenEvents()
         }
     }
 
     private func loadOrders() async {
-            do {
-                let fetchedOrders = try await orderService.getKitchenOrders()
-                kitchenOrders = fetchedOrders
-            } catch {
-                print("Ошибка при загрузке заказов: \(error)")
+        do {
+            let fetchedOrders = try await orderService.getKitchenOrders()
+            kitchenOrders = fetchedOrders
+        } catch {
+            print("Ошибка при загрузке заказов: \(error)")
+        }
+    }
+
+    private func observeKitchenEvents() async {
+        for await event in orderService.kitchenEvents() {
+            await MainActor.run {
+                withAnimation {
+                    switch event.command {
+                    case .add:
+                        if let order = event.order,
+                           !kitchenOrders.contains(where: { $0.id == order.id }) {
+                            kitchenOrders.append(order)
+                        }
+                    case .remove:
+                        kitchenOrders.removeAll { $0.id == event.orderId }
+                    }
+                }
             }
+        }
     }
 }
 
@@ -110,6 +127,10 @@ struct DoneButton: View {
                     do {
                         try await orderService.cookOrder(id: kitchenOrder.id)
 
+                        // The SSE `kitchen` stream will also emit a "remove"
+                        // event for this order, but we still update locally
+                        // right away for a snappier UI; the later SSE event
+                        // will be a harmless no-op since the id is already gone.
                         await MainActor.run {
                             onFinish()
                         }
